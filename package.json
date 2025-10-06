@@ -1,0 +1,20 @@
+{
+  "name": "app-reservas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "des": "node --wacth index.js"
+  },
+  "author": "Joel",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "handlebar": "^1.0.0",
+    "handlebars": "^4.7.8",
+    "mysql2": "^3.15.1",
+    "nodemailer": "^7.0.6"
+  }
+}
