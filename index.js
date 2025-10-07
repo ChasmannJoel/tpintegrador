@@ -147,10 +147,95 @@ app.post('/salones', async(req, res) => {
     }
 });
 
+app.put('/salones/:salon_id', async(req, res) => {
+    try {
+        const salon_id = req.params.salon_id;
+        
+        // ✅ AGREGAR ESTA LÍNEA - extraer datos del body
+        const { titulo, direccion, capacidad, importe } = req.body;
+        
+        // Verificar que exista el salón
+        const sql = `SELECT * FROM salones WHERE activo = 1 and salon_id = ?`;
+        const [results] = await conexion.query(sql, [salon_id]);
+
+        if(results.length === 0){
+            return res.status(404).json({
+                estado: false,
+                mensaje: 'El salon no existe'
+            });
+        }
+
+        // Validar datos requeridos
+        if(!titulo || !direccion || !capacidad || !importe){
+            return res.status(400).json({
+                estado: false,
+                mensaje: 'Faltan datos requeridos'
+            });
+        }
+
+        // ✅ CAMBIAR: usar execute() consistentemente
+        const sql2 = 'UPDATE salones SET titulo=?, direccion=?, capacidad=?, importe=? WHERE salon_id=?';
+        const valores = [titulo, direccion, capacidad, importe, salon_id];
+        
+        const [result] = await conexion.execute(sql2, valores);
+        
+        res.status(200).json({
+            estado: true,
+            mensaje: 'Salón modificado exitosamente'
+        });
+
+    } catch (err) {
+        console.log('error en metodo PUT /salones/:salon_id', err);
+        res.status(500).json({    
+            estado: false,
+            mensaje: 'Error en el servidor'
+        });
+    }
+});
+
+
+
+
+app.delete('/salones/:salon_id', async(req, res) => {
+    try {
+        const salon_id = req.params.salon_id;
+        
+        
+        // Verificar que exista el salón
+        const sql = `SELECT * FROM salones WHERE activo = 1 and salon_id = ?`;
+        const [results] = await conexion.query(sql, [salon_id]);
+
+        if(results.length === 0){
+            return res.status(404).json({
+                estado: false,
+                mensaje: 'El salon no existe'
+            });
+        }
+
+        const sql2 = 'UPDATE salones SET activo=0 WHERE salon_id=?';        
+        const [result] = await conexion.execute(sql2, [salon_id]);
+        
+        res.status(200).json({
+            estado: true,
+            mensaje: 'Salón eliminado exitosamente'
+        });
+
+    } catch (err) {
+        console.log('error en metodo DELETE /salones/:salon_id', err);
+        res.status(500).json({    
+            estado: false,
+            mensaje: 'Error en el servidor'
+        });
+    }
+});
+
+       
+
 // cargo las variables de entorno
 process.loadEnvFile();
 
 // lanzo mi servidor express
 app.listen(process.env.PUERTO, () => {
     console.log(`Servidor iniciado en ${process.env.PUERTO}`);
+    
 });
